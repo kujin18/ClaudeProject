@@ -24,3 +24,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Node / Tailwind ###
+node_modules/
+src/main/resources/static/css/output.css

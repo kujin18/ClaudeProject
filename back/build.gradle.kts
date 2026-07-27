@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "2.4.10"
     kotlin("plugin.spring") version "2.4.10"
     kotlin("plugin.jpa") version "2.4.10"
+    id("com.github.node-gradle.node") version "7.1.0"
 }
 
 group = "com.back"
@@ -55,4 +56,20 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+node {
+    download.set(false)
+}
+
+val buildCss = tasks.register<com.github.gradle.node.npm.task.NpmTask>("buildCss") {
+    dependsOn(tasks.npmInstall)
+    args.set(listOf("run", "build:css"))
+    inputs.file("src/main/resources/static/css/input.css")
+    inputs.dir("src/main/resources/templates")
+    outputs.file("src/main/resources/static/css/output.css")
+}
+
+tasks.named("processResources") {
+    dependsOn(buildCss)
 }
