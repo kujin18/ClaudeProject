@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>단축 링크 생성 완료</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}"/>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center gap-4">
+<h1 class="text-2xl font-bold">단축 링크가 만들어졌습니다</h1>
+<p>원본: <span th:text="${originalUrl}"></span></p>
+<p class="font-mono" th:text="${shortLinkPath}"></p>
+<a class="rounded bg-blue-600 px-4 py-2 text-white" th:href="@{/links/new}">다른 링크 만들기</a>
+</body>
+</html>
