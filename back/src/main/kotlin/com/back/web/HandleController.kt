@@ -2,6 +2,7 @@ package com.back.web
 
 import com.back.domain.account.AccountRepository
 import com.back.security.AppOAuth2User
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -44,7 +45,13 @@ class HandleController(
         }
 
         account.assignHandle(trimmed)
-        accountRepository.save(account)
+        try {
+            accountRepository.save(account)
+        } catch (e: DataIntegrityViolationException) {
+            model.addAttribute("error", "이미 사용 중인 핸들입니다.")
+            model.addAttribute("handle", trimmed)
+            return "setup-handle"
+        }
         return "redirect:/"
     }
 }
