@@ -79,14 +79,15 @@ class LoginAndHandleSetupTest @Autowired constructor(
     @Test
     fun `이미 사용 중인 핸들은 거부되고 폼이 다시 보인다`() {
         accountRepository.save(
-            Account(googleSubject = "sub-taken", email = "taken@example.com").apply { assignHandle("kujin") },
+            Account(googleSubject = "sub-taken", email = "taken@example.com")
+                .apply { assignHandle("duplicate-handle-test") },
         )
         val account = accountRepository.save(Account(googleSubject = "sub-3", email = "c@example.com"))
 
         mockMvc.post("/setup-handle") {
             with(oauth2Login().oauth2User(principalFor(account)))
             with(csrf())
-            param("handle", "kujin")
+            param("handle", "duplicate-handle-test")
         }.andExpect {
             status { isOk() }
         }
