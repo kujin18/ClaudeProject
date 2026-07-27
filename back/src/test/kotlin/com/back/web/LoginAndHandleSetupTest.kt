@@ -7,6 +7,7 @@ import com.back.support.AbstractIntegrationTest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.mock.web.MockHttpSession
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login
@@ -30,7 +31,7 @@ class LoginAndHandleSetupTest @Autowired constructor(
         )
 
     private fun principalFor(account: Account) =
-        AppOAuth2User(oauth2UserFor(account), account.id!!, account.handle)
+        AppOAuth2User(oauth2UserFor(account), account.id!!)
 
     @Test
     fun `로그인 안 한 사용자는 홈 화면을 볼 수 있다`() {
@@ -103,5 +104,30 @@ class LoginAndHandleSetupTest @Autowired constructor(
             status { is3xxRedirection() }
             redirectedUrl("/")
         }
+    }
+
+    @Test
+    fun `로그인 세션이 유지되어 이후 요청에서도 같은 사용자로 식별된다`() {
+        val account = accountRepository.save(Account(googleSubject = "sub-5", email = "e@example.com"))
+
+        val firstResult = mockMvc.get("/setup-handle") {
+            with(oauth2Login().oauth2User(principalFor(account)))
+        }.andExpect {
+            status { isOk() }
+        }.andReturn()
+
+        val session = firstResult.request.session as MockHttpSession
+
+        // 두 번째 요청은 oauth2Login()을 다시 붙이지 않고, 첫 요청에서 만들어진 세션만 재사용한다.
+        mockMvc.post("/setup-handle") {
+            this.session = session
+            param("handle", "kujin-session")
+        }.andExpect {
+            status { is3xxRedirection() }
+            redirectedUrl("/")
+        }
+
+        val saved = accountRepository.findById(account.id!!).orElseThrow()
+        assertEquals("kujin-session", saved.handle)
     }
 }

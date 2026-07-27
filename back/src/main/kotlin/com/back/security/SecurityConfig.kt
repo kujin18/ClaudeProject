@@ -1,5 +1,6 @@
 package com.back.security
 
+import com.back.domain.account.AccountService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 class SecurityConfig(
     private val customOAuth2UserService: CustomOAuth2UserService,
+    private val accountService: AccountService,
 ) {
 
     @Bean
@@ -33,7 +35,8 @@ class SecurityConfig(
     fun loginSuccessHandler(): AuthenticationSuccessHandler =
         AuthenticationSuccessHandler { _, response, authentication ->
             val principal = authentication.principal as AppOAuth2User
-            val redirectUrl = if (principal.handle == null) "/setup-handle" else "/"
+            val account = accountService.findById(principal.accountId)
+            val redirectUrl = if (account.hasHandle()) "/" else "/setup-handle"
             response.sendRedirect(redirectUrl)
         }
 }

@@ -25,6 +25,6 @@ class CustomOAuth2UserService(
         val account = accountRepository.findByGoogleSubject(googleSubject)
             ?: accountRepository.save(Account(googleSubject = googleSubject, email = email))
 
-        return AppOAuth2User(oAuth2User, account.id!!, account.handle)
+        return AppOAuth2User(oAuth2User, account.id!!)
     }
 }
