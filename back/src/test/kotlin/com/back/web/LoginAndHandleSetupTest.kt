@@ -10,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.mock.web.MockHttpSession
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
@@ -64,6 +65,7 @@ class LoginAndHandleSetupTest @Autowired constructor(
 
         mockMvc.post("/setup-handle") {
             with(oauth2Login().oauth2User(principalFor(account)))
+            with(csrf())
             param("handle", "kujin")
         }.andExpect {
             status { is3xxRedirection() }
@@ -83,6 +85,7 @@ class LoginAndHandleSetupTest @Autowired constructor(
 
         mockMvc.post("/setup-handle") {
             with(oauth2Login().oauth2User(principalFor(account)))
+            with(csrf())
             param("handle", "kujin")
         }.andExpect {
             status { isOk() }
@@ -121,6 +124,7 @@ class LoginAndHandleSetupTest @Autowired constructor(
         // 두 번째 요청은 oauth2Login()을 다시 붙이지 않고, 첫 요청에서 만들어진 세션만 재사용한다.
         mockMvc.post("/setup-handle") {
             this.session = session
+            with(csrf())
             param("handle", "kujin-session")
         }.andExpect {
             status { is3xxRedirection() }
