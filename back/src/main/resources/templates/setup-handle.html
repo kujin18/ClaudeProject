@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>계정 핸들 설정</title>
+</head>
+<body>
+<h1>계정 핸들 설정</h1>
+<p th:if="${error}" th:text="${error}"></p>
+<form method="post" th:action="@{/setup-handle}">
+    <input type="text" name="handle" th:value="${handle}" placeholder="예: kujin" required/>
+    <button type="submit">설정하기</button>
+</form>
+</body>
+</html>
