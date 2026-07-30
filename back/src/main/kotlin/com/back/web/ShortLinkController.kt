@@ -1,11 +1,16 @@
 package com.back.web
 
+import com.back.domain.account.AccountService
 import com.back.domain.shortlink.ShortLinkCreationResult
 import com.back.domain.shortlink.ShortLinkDeletionResult
+import com.back.domain.shortlink.ShortLinkRepository
 import com.back.domain.shortlink.ShortLinkService
 import com.back.domain.shortlink.ShortLinkVisibilityToggleResult
+import com.back.qrcode.QrCodeGenerator
 import com.back.security.AppOAuth2User
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -14,10 +19,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Controller
 class ShortLinkController(
     private val shortLinkService: ShortLinkService,
+    private val shortLinkRepository: ShortLinkRepository,
+    private val accountService: AccountService,
 ) {
 
     @GetMapping("/links/new")
@@ -87,5 +95,23 @@ class ShortLinkController(
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
         return "redirect:/dashboard"
+    }
+
+    @GetMapping("/links/{id}/qr-code")
+    fun qrCode(
+        @AuthenticationPrincipal principal: AppOAuth2User,
+        @PathVariable id: Long,
+    ): ResponseEntity<ByteArray> {
+        val shortLink = shortLinkRepository.findByIdAndAccount_Id(id, principal.accountId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        val account = accountService.findById(principal.accountId)
+
+        val shortLinkUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/${account.handle}/${shortLink.domainPrefix}/${shortLink.alias}")
+            .toUriString()
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_PNG)
+            .body(QrCodeGenerator.generatePng(shortLinkUrl))
     }
 }
