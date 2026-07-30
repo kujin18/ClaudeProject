@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>대시보드</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}"/>
+</head>
+<body class="min-h-screen flex flex-col items-center gap-4 p-8">
+<h1 class="text-2xl font-bold">내 단축 링크</h1>
+<a class="rounded bg-blue-600 px-4 py-2 text-white" th:href="@{/links/new}">새 링크 만들기</a>
+<p th:if="${links.isEmpty()}">아직 만든 단축 링크가 없습니다.</p>
+<table class="w-full max-w-4xl border-collapse" th:if="${!links.isEmpty()}">
+    <thead>
+    <tr class="text-left border-b">
+        <th class="p-2">원본 URL</th>
+        <th class="p-2">단축 링크</th>
+        <th class="p-2">생성일</th>
+        <th class="p-2">클릭 수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="border-b" th:each="link : ${links}">
+        <td class="p-2 break-all" th:text="${link.originalUrl}"></td>
+        <td class="p-2 font-mono" th:text="${link.shortLinkPath}"></td>
+        <td class="p-2" th:text="${link.createdDate}"></td>
+        <td class="p-2" th:text="${link.clickCount}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -10,6 +10,8 @@ interface ShortLinkRepository : JpaRepository<ShortLink, Long> {
 
     fun findByAccount_HandleAndDomainPrefixAndAlias(handle: String, domainPrefix: String, alias: String): ShortLink?
 
+    fun findByAccountOrderByCreatedDateDesc(account: Account): List<ShortLink>
+
     @Modifying
     @Query("update ShortLink s set s.clickCount = s.clickCount + 1 where s.id = :id")
     fun incrementClickCount(id: Long): Int
