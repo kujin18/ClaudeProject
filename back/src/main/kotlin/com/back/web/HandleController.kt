@@ -40,5 +40,10 @@ class HandleController(
             model.addAttribute("handle", handle.trim())
             "setup-handle"
         }
+        HandleAssignmentResult.Reserved -> {
+            model.addAttribute("error", "사용할 수 없는 핸들입니다.")
+            model.addAttribute("handle", handle.trim())
+            "setup-handle"
+        }
     }
 }
