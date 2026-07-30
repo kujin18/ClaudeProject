@@ -3,6 +3,7 @@ package com.back.web
 import com.back.domain.shortlink.ShortLinkCreationResult
 import com.back.domain.shortlink.ShortLinkDeletionResult
 import com.back.domain.shortlink.ShortLinkService
+import com.back.domain.shortlink.ShortLinkVisibilityToggleResult
 import com.back.security.AppOAuth2User
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -71,6 +72,18 @@ class ShortLinkController(
     ): String {
         val result = shortLinkService.delete(principal.accountId, id)
         if (result == ShortLinkDeletionResult.NotFound) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+        return "redirect:/dashboard"
+    }
+
+    @PostMapping("/links/{id}/toggle-visibility")
+    fun toggleVisibility(
+        @AuthenticationPrincipal principal: AppOAuth2User,
+        @PathVariable id: Long,
+    ): String {
+        val result = shortLinkService.toggleVisibility(principal.accountId, id)
+        if (result == ShortLinkVisibilityToggleResult.NotFound) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
         return "redirect:/dashboard"
