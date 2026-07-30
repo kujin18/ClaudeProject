@@ -39,4 +39,8 @@ class ShortLink(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
         protected set
+
+    @Column(name = "click_count", nullable = false)
+    var clickCount: Long = 0
+        protected set
 }
