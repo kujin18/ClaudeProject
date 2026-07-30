@@ -1,5 +1,6 @@
 package com.back.web
 
+import com.back.domain.account.AccountService
 import com.back.domain.shortlink.ShortLinkCreationResult
 import com.back.domain.shortlink.ShortLinkDeletionResult
 import com.back.domain.shortlink.ShortLinkRepository
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 class ShortLinkController(
     private val shortLinkService: ShortLinkService,
     private val shortLinkRepository: ShortLinkRepository,
+    private val accountService: AccountService,
 ) {
 
     @GetMapping("/links/new")
@@ -102,9 +104,10 @@ class ShortLinkController(
     ): ResponseEntity<ByteArray> {
         val shortLink = shortLinkRepository.findByIdAndAccount_Id(id, principal.accountId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        val account = accountService.findById(principal.accountId)
 
         val shortLinkUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/${shortLink.account.handle}/${shortLink.domainPrefix}/${shortLink.alias}")
+            .path("/${account.handle}/${shortLink.domainPrefix}/${shortLink.alias}")
             .toUriString()
 
         return ResponseEntity.ok()
