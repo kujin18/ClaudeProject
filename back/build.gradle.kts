@@ -32,6 +32,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("com.google.zxing:javase:3.5.4")
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
