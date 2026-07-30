@@ -20,7 +20,11 @@ class SecurityConfig(
         http
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/", "/login/**", "/oauth2/**", "/css/**", "/js/**", "/*/*/*").permitAll()
+                    // 인증 필요 경로를 먼저 매칭시켜, 아래의 "/*"(프로필 페이지) permitAll
+                    // 와일드카드가 이 경로들을 가로채지 못하게 한다(매칭 순서대로 첫 규칙이 적용됨).
+                    .requestMatchers("/dashboard", "/setup-handle", "/links", "/links/**").authenticated()
+                    .requestMatchers("/", "/login/**", "/oauth2/**", "/css/**", "/js/**", "/*/*/*", "/*")
+                    .permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2Login { oauth2 ->

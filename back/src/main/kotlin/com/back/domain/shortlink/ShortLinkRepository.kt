@@ -20,6 +20,11 @@ interface ShortLinkRepository : JpaRepository<ShortLink, Long> {
 
     fun findByAccountAndDeletedFalseOrderByCreatedDateDesc(account: Account): List<ShortLink>
 
+    fun findByAccountAndVisibilityAndDeletedFalseOrderByCreatedDateDesc(
+        account: Account,
+        visibility: Visibility,
+    ): List<ShortLink>
+
     fun findByIdAndAccount_Id(id: Long, accountId: Long): ShortLink?
 
     @Modifying
