@@ -51,7 +51,7 @@ class ShortLinkCreationTest @Autowired constructor(
             content { string(containsString("/sl-handle-1/op/Faker-KR1")) }
         }
 
-        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAlias(account, "op", "Faker-KR1"))
+        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAliasAndDeletedFalse(account, "op", "Faker-KR1"))
     }
 
     @Test
@@ -133,7 +133,7 @@ class ShortLinkCreationTest @Autowired constructor(
             param("alias", "alias-two")
         }.andExpect { status { isOk() } }
 
-        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAlias(account, "op", "alias-one"))
-        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAlias(account, "op", "alias-two"))
+        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAliasAndDeletedFalse(account, "op", "alias-one"))
+        assertTrue(shortLinkRepository.existsByAccountAndDomainPrefixAndAliasAndDeletedFalse(account, "op", "alias-two"))
     }
 }

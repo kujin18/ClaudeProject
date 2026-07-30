@@ -30,7 +30,7 @@ class ShortLinkService(
             ?: DomainPrefixExtractor.extract(host)
 
         val account = accountRepository.findById(accountId).orElseThrow()
-        if (shortLinkRepository.existsByAccountAndDomainPrefixAndAlias(account, prefix, trimmedAlias)) {
+        if (shortLinkRepository.existsByAccountAndDomainPrefixAndAliasAndDeletedFalse(account, prefix, trimmedAlias)) {
             return ShortLinkCreationResult.AliasTaken
         }
 
@@ -45,6 +45,15 @@ class ShortLinkService(
         } catch (e: DataIntegrityViolationException) {
             ShortLinkCreationResult.AliasTaken
         }
+    }
+
+    @Transactional
+    fun delete(accountId: Long, shortLinkId: Long): ShortLinkDeletionResult {
+        val shortLink = shortLinkRepository.findByIdAndAccount_Id(shortLinkId, accountId)
+            ?: return ShortLinkDeletionResult.NotFound
+        shortLink.markDeleted()
+        shortLinkRepository.save(shortLink)
+        return ShortLinkDeletionResult.Success
     }
 
     private fun parseHost(url: String): String? {
@@ -63,4 +72,9 @@ sealed interface ShortLinkCreationResult {
     data object InvalidUrl : ShortLinkCreationResult
     data object BlankAlias : ShortLinkCreationResult
     data object AliasTaken : ShortLinkCreationResult
+}
+
+sealed interface ShortLinkDeletionResult {
+    data object Success : ShortLinkDeletionResult
+    data object NotFound : ShortLinkDeletionResult
 }
