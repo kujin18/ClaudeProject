@@ -2,6 +2,7 @@ package com.back.web
 
 import com.back.domain.account.AccountService
 import com.back.domain.shortlink.ShortLinkRepository
+import com.back.domain.shortlink.Visibility
 import com.back.security.AppOAuth2User
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
@@ -30,6 +31,7 @@ class DashboardController(
                 shortLinkPath = "/${account.handle}/${it.domainPrefix}/${it.alias}",
                 createdDate = CREATED_DATE_FORMAT.format(it.createdDate),
                 clickCount = it.clickCount,
+                visibility = it.visibility,
             )
         }
         model.addAttribute("links", rows)
@@ -43,4 +45,5 @@ data class ShortLinkRow(
     val shortLinkPath: String,
     val createdDate: String,
     val clickCount: Long,
+    val visibility: Visibility,
 )

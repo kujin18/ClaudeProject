@@ -56,6 +56,15 @@ class ShortLinkService(
         return ShortLinkDeletionResult.Success
     }
 
+    @Transactional
+    fun toggleVisibility(accountId: Long, shortLinkId: Long): ShortLinkVisibilityToggleResult {
+        val shortLink = shortLinkRepository.findByIdAndAccount_Id(shortLinkId, accountId)
+            ?: return ShortLinkVisibilityToggleResult.NotFound
+        shortLink.toggleVisibility()
+        shortLinkRepository.save(shortLink)
+        return ShortLinkVisibilityToggleResult.Success
+    }
+
     private fun parseHost(url: String): String? {
         val uri = try {
             URI(url)
@@ -77,4 +86,9 @@ sealed interface ShortLinkCreationResult {
 sealed interface ShortLinkDeletionResult {
     data object Success : ShortLinkDeletionResult
     data object NotFound : ShortLinkDeletionResult
+}
+
+sealed interface ShortLinkVisibilityToggleResult {
+    data object Success : ShortLinkVisibilityToggleResult
+    data object NotFound : ShortLinkVisibilityToggleResult
 }
