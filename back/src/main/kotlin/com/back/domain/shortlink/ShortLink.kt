@@ -11,18 +11,9 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
 
 @Entity
-@Table(
-    name = "short_link",
-    uniqueConstraints = [
-        UniqueConstraint(
-            name = "uk_short_link_account_prefix_alias",
-            columnNames = ["account_id", "domain_prefix", "alias"],
-        ),
-    ],
-)
+@Table(name = "short_link")
 class ShortLink(
     @Column(name = "original_url", nullable = false, updatable = false)
     val originalUrl: String,
@@ -43,4 +34,12 @@ class ShortLink(
     @Column(name = "click_count", nullable = false)
     var clickCount: Long = 0
         protected set
+
+    @Column(nullable = false)
+    var deleted: Boolean = false
+        protected set
+
+    fun markDeleted() {
+        deleted = true
+    }
 }
