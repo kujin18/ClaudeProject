@@ -22,7 +22,8 @@ class RedirectController(
         @PathVariable domainPrefix: String,
         @PathVariable alias: String,
     ): ResponseEntity<Void> {
-        val shortLink = shortLinkRepository.findByAccount_HandleAndDomainPrefixAndAlias(handle, domainPrefix, alias)
+        val shortLink = shortLinkRepository
+            .findByAccount_HandleAndDomainPrefixAndAliasAndDeletedFalse(handle, domainPrefix, alias)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
         shortLinkRepository.incrementClickCount(shortLink.id!!)

@@ -23,8 +23,9 @@ class DashboardController(
         model: Model,
     ): String {
         val account = accountService.findById(principal.accountId)
-        val rows = shortLinkRepository.findByAccountOrderByCreatedDateDesc(account).map {
+        val rows = shortLinkRepository.findByAccountAndDeletedFalseOrderByCreatedDateDesc(account).map {
             ShortLinkRow(
+                id = it.id!!,
                 originalUrl = it.originalUrl,
                 shortLinkPath = "/${account.handle}/${it.domainPrefix}/${it.alias}",
                 createdDate = CREATED_DATE_FORMAT.format(it.createdDate),
@@ -37,6 +38,7 @@ class DashboardController(
 }
 
 data class ShortLinkRow(
+    val id: Long,
     val originalUrl: String,
     val shortLinkPath: String,
     val createdDate: String,

@@ -1,14 +1,18 @@
 package com.back.web
 
 import com.back.domain.shortlink.ShortLinkCreationResult
+import com.back.domain.shortlink.ShortLinkDeletionResult
 import com.back.domain.shortlink.ShortLinkService
 import com.back.security.AppOAuth2User
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.server.ResponseStatusException
 
 @Controller
 class ShortLinkController(
@@ -58,5 +62,17 @@ class ShortLinkController(
                 "links/new"
             }
         }
+    }
+
+    @PostMapping("/links/{id}/delete")
+    fun delete(
+        @AuthenticationPrincipal principal: AppOAuth2User,
+        @PathVariable id: Long,
+    ): String {
+        val result = shortLinkService.delete(principal.accountId, id)
+        if (result == ShortLinkDeletionResult.NotFound) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+        return "redirect:/dashboard"
     }
 }
